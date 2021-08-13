@@ -1,0 +1,130 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "com.example.demo.remote";
+option java_outer_classname = "BMovieContract";
+
+message BMovieGRPC {
+    bool isValidBMovie = 1;
+    string imdbID = 2;
+    string title = 3;
+    int32 yearOfRelease = 4;
+    int32 duration = 5;
+    repeated string genres = 6;
+    repeated string actors = 7;
+    double imdbRating = 8;
+    string description = 9;
+}
+
+message QueriedResultsGRPC {
+    bool flag = 1;
+    repeated string imdbIDs = 2;
+}
+
+message BMovieGenresGRPC {
+    repeated string genres = 1;
+}
+
+message BMovieRequestByRating {
+    string minRating = 1;
+    string maxRating = 2;
+}
+
+message BMovieResponse {
+    map<string, string> response = 1;
+}
+
+message BMovieDescriptionRequest {
+    string imdbID = 1;
+}
+
+message BMovieDescriptionResponse {
+    map<string, BMovieGRPC> response = 1;
+}
+
+message BMovieImgRequest {
+    string imdbID = 1;
+}
+
+message BMovieImgResponse {
+    map<string, QueriedResultsGRPC> response = 1;
+}
+
+message BMovieSimpleQueryRequest {
+    string genres = 1;
+    string actors = 2;
+}
+
+message BMovieSimpleQueryResponse {
+    map<string, QueriedResultsGRPC> response = 1;
+}
+
+message BMovieSingleRequest {
+    string queryType = 1;
+    double min = 2;
+    double max = 3;
+    string genres = 4;
+    string actors = 5;
+}
+
+message BMovieSingleResponse {
+    map<string, QueriedResultsGRPC> response = 1;
+}
+
+message BMovieDoubleRequest {
+    string queryType1 = 1;
+    string queryType2 = 2;
+    double min1 = 3;
+    double max1 = 4;
+    double min2 = 5;
+    double max2 = 6;
+    string genres = 7;
+    string actors = 8;
+}
+
+message BMovieDoubleResponse {
+    map<string, QueriedResultsGRPC> response = 1;
+}
+
+message BMovieTripleRequest {
+     double min1 = 1;
+     double max1 = 2;
+     double min2 = 3;
+     double max2 = 4;
+     double min3 = 5;
+     double max3 = 6;
+     string genres = 7;
+     string actors = 8;
+}
+
+message BMovieTripleResponse {
+    map<string, QueriedResultsGRPC> response = 1;
+}
+
+message BMovieGenreRequest {
+
+}
+
+message BMovieGenreResponse {
+    map<string, BMovieGenresGRPC> response = 1;
+}
+
+service BMovieDescriptionHandler {
+    rpc getMoviesByRatingRange(BMovieRequestByRating) returns (BMovieResponse);
+    rpc getBMovieDetails(BMovieDescriptionRequest) returns (BMovieDescriptionResponse);
+}
+
+service BMovieImgHandler {
+    rpc getImgOfBMovie(BMovieImgRequest) returns (BMovieImgResponse);
+}
+
+service BMovieQueryHandler {
+    rpc getMoviesByGeneralQuery(BMovieSimpleQueryRequest) returns (BMovieSimpleQueryResponse);
+    rpc getMoviesBySingleQuery(BMovieSingleRequest) returns (BMovieSingleResponse);
+    rpc getMoviesByDoubleQuery(BMovieDoubleRequest) returns (BMovieDoubleResponse);
+    rpc getMoviesByTripleQuery(BMovieTripleRequest) returns (BMovieTripleResponse);
+}
+
+service BMovieGenresHandler {
+    rpc getBMovieGenres(BMovieGenreRequest) returns (BMovieGenreResponse);
+}
