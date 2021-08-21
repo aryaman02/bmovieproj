@@ -1,6 +1,8 @@
 package com.example.demo;
 
 import com.example.entrypoint.EntryPointDriver;
+import com.example.generator.EventsGeneratorDriver;
+import com.example.kafka.ConsumerDriver;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
@@ -23,7 +25,7 @@ public class DemoApplication {
 		System.out.println("DemoApplication.stop");
 	}
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws IOException, InterruptedException {
 		String prop = System.getProperty("mode", "restservice");
 
 		if (prop.equals("restservice")) {
@@ -32,6 +34,10 @@ public class DemoApplication {
 			BMovieGrpcDriver.run();
 		} else if (prop.equals("entrypoint")) {
 			EntryPointDriver.run();
+		} else if (prop.equals("kconsumer")) {
+			ConsumerDriver.startConsumerThreads();
+		} else if (prop.equals("generator")) {
+			EventsGeneratorDriver.generateEvents();
 		} else {
 			System.out.println("unknown mode");
 		}
