@@ -2,7 +2,8 @@ package com.example.demo;
 
 import com.example.entrypoint.EntryPointDriver;
 import com.example.generator.EventsGeneratorDriver;
-import com.example.kafka.ConsumerDriver;
+import com.example.kafka.EventAggregatorDriver;
+import com.example.kafka.EventProcessorDriver;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
@@ -34,9 +35,11 @@ public class DemoApplication {
 			BMovieGrpcDriver.run();
 		} else if (prop.equals("entrypoint")) {
 			EntryPointDriver.run();
-		} else if (prop.equals("kconsumer")) {
-			ConsumerDriver.startConsumerThreads();
-		} else if (prop.equals("generator")) {
+		} else if (prop.equals("evprocessor")) {
+			EventProcessorDriver.startConsumerThreads();
+		} else if (prop.equals("evaggregator")) {
+			EventAggregatorDriver.startConsumerThreads();
+ 		} else if (prop.equals("generator")) {
 			EventsGeneratorDriver.generateEvents();
 		} else {
 			System.out.println("unknown mode");

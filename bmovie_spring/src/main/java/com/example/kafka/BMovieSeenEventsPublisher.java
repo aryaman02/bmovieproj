@@ -23,6 +23,7 @@ public class BMovieSeenEventsPublisher {
     private final EventPublished callback = new EventPublished();
     private static final String CONNECTION_STRING = "0.0.0.0:9092";
     private static final String TOPIC_NAME = "bmovie_seen_events";
+    private static final int NUM_PARTITIONS = 12;
 
     public void initialize() {
         Properties props = createProps();
@@ -33,9 +34,12 @@ public class BMovieSeenEventsPublisher {
         producer.close();
     }
 
-    public void publishBMovEvent(String imdbID, BMovieSeenEvent event, int partition) {
+    public void publishBMovEvent(BMovieSeenEvent event) {
+        int partition = -1;
+
         try {
-            ProducerRecord<String, BMovieSeenEvent> record = new ProducerRecord<>(TOPIC_NAME, partition, imdbID, event);
+            partition = (Math.abs(event.getImdbID().hashCode())) % NUM_PARTITIONS;
+            ProducerRecord<String, BMovieSeenEvent> record = new ProducerRecord<>(TOPIC_NAME, partition, null, event);
             producer.send(record, callback);
         } catch (RuntimeException ex) {
             String errMessage = String.format("Exception while publishing message %s on partition %d", event, partition);

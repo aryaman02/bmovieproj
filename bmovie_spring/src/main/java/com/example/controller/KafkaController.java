@@ -17,8 +17,6 @@ public class KafkaController {
     @Autowired
     private final BMovieSeenEventsPublisher publisher = new BMovieSeenEventsPublisher();
 
-    private static final int NUM_PARTITIONS = 12;
-
     @PostConstruct
     public void initialize() {
         publisher.initialize();
@@ -34,7 +32,7 @@ public class KafkaController {
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<String> publishBMovieEventsToKafka(@RequestBody List<BMovieSeenEvent> events) {
         for (BMovieSeenEvent event : events) {
-            publisher.publishBMovEvent(event.getImdbID(), event, (int) (Math.random() * NUM_PARTITIONS));
+            publisher.publishBMovEvent(event);
         }
         return new ResponseEntity<>("Successfully added bmovie_seen events to Kafka!", HttpStatus.OK);
     }
