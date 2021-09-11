@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import java.util.List;
 
 @RestController
 public class BMovEventInfoController {
@@ -49,9 +50,9 @@ public class BMovEventInfoController {
             return new ResponseEntity<>("Bad Request - Please enter an integer k with value > 0.", HttpStatus.BAD_REQUEST);
         }
 
-        RankingsList listOfRankings = service.handleUserRatingRequest(genre, k);
+        List<RankingEntry> listOfRankings = service.handleUserRatingRequest(genre, k);
 
-        if (listOfRankings.getTopKStatus().equals("N.A.")) {
+        if (listOfRankings.size() == 0) {
             return new ResponseEntity<>("No results found! Please check that you have entered a valid genre (check the genre "
                 + "endpoint for more info) or please check back later for the latest set of rankings.", HttpStatus.NOT_FOUND);
         }
@@ -81,9 +82,9 @@ public class BMovEventInfoController {
             return new ResponseEntity<>("Bad Request - Please enter an integer k with value > 0.", HttpStatus.BAD_REQUEST);
         }
 
-        RankingsList listOfRankings = service.handleGrossEarningsRequest(k);
+        List<RankingEntry> listOfRankings = service.handleGrossEarningsRequest(k);
 
-        if (listOfRankings.getTopKStatus().equals("N.A.")) {
+        if (listOfRankings.size() == 0) {
             return new ResponseEntity<>("No results found! Please check back later for the latest set of rankings.", HttpStatus.NOT_FOUND);
         }
 
@@ -112,9 +113,9 @@ public class BMovEventInfoController {
             return new ResponseEntity<>("Bad Request - Please enter an integer k with value > 0.", HttpStatus.BAD_REQUEST);
         }
 
-        RankingsList listOfRankings = service.handleViewerShipRequest(k);
+        List<RankingEntry> listOfRankings = service.handleViewerShipRequest(k);
 
-        if (listOfRankings.getTopKStatus().equals("N.A.")) {
+        if (listOfRankings.size() == 0) {
             return new ResponseEntity<>("No results found! Please check back later for the latest set of rankings.", HttpStatus.NOT_FOUND);
         }
 

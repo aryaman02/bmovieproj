@@ -74,23 +74,6 @@ public class BMovieEventGenerator {
         }
     }
 
-    public void generateFiniteSetBMovieSeenEvents() throws InterruptedException {
-        int badEventCandidate = (int) (Math.random() * 10);
-
-        for (int i = 0; i < 10; i++) {
-            if (i == badEventCandidate) {
-                BMovieSeenEvent bMovieBadEvent = generateBadEvent();
-                //System.out.println(bMovieBadEvent); // for testing purposes
-                lbq.add(bMovieBadEvent);
-            } else {
-                BMovieSeenEvent bMovieGoodEvent = generateGoodEvent();
-                //System.out.println(bMovieGoodEvent); // for testing purposes
-                lbq.add(bMovieGoodEvent);
-            }
-            Thread.sleep((long) (Math.random() * 4970 + 30));// sleep after generating bmovieseen event
-        }
-    }
-
     private BMovieSeenEvent generateGoodEvent() {
         String randIMDBid = bMovieIMDBids.get((int) (Math.random() * bMovieIMDBids.size()));
 
@@ -222,8 +205,8 @@ public class BMovieEventGenerator {
             try {
                 BMovieSeenEvent bMovSeenEvent = lbq.poll(1000, TimeUnit.MILLISECONDS);
 
-                while (bMovSeenEvent == null) {
-                    bMovSeenEvent = lbq.poll(1000, TimeUnit.MILLISECONDS);
+                if (bMovSeenEvent == null) {
+                    continue;
                 }
                 events.add(bMovSeenEvent);
             } catch (InterruptedException e) {

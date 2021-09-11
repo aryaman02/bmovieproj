@@ -3,6 +3,7 @@ package com.example.controller;
 import org.springframework.stereotype.Service;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.Tuple;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,60 +20,55 @@ public class BMovEventInfoService {
         pool.close();
     }
 
-    public RankingsList handleUserRatingRequest(String genre, int k) {
+    public List<RankingEntry> handleUserRatingRequest(String genre, int k) {
         String genreKey = genre + "Rating";
+        List<RankingEntry> rankings = new ArrayList<>();
 
         try (Jedis jedis = pool.getResource()) { // try with resources block!
-            if (!jedis.exists(genreKey)) {
-                RankingsList emptyRankings = new RankingsList("N.A.");
-                return emptyRankings;
-
-            } else {
+            if (jedis.exists(genreKey)) {
                 int min = (int) Math.min(k, jedis.zcard(genreKey));
-                List<String> imdbIDs = new ArrayList<>(jedis.zrevrange(genreKey, 0, min));
-                String status = "Top-" + String.valueOf(min);
-                RankingsList rankingsList = new RankingsList(status);
-                rankingsList.setImdbIDs(imdbIDs);
-                return rankingsList;
+                List<Tuple> entries = new ArrayList<>(jedis.zrevrangeWithScores(genreKey, 0, min-1));
+
+                for (Tuple t : entries) {
+                    rankings.add(new RankingEntry(t.getElement(), t.getScore()));
+                }
             }
         }
+        return rankings;
     }
 
-    public RankingsList handleGrossEarningsRequest(int k) {
+    public List<RankingEntry> handleGrossEarningsRequest(int k) {
         String grossKey = "TOTAL_COLLECTION_EARNINGS";
+        List<RankingEntry> rankings = new ArrayList<>();
 
         try (Jedis jedis = pool.getResource()) { // try with resources block!
-            if (!jedis.exists(grossKey)) {
-                RankingsList emptyRankings = new RankingsList("N.A.");
-                return emptyRankings;
-
-            } else {
+            if (jedis.exists(grossKey)) {
                 int min = (int) Math.min(k, jedis.zcard(grossKey));
-                List<String> imdbIDs = new ArrayList<>(jedis.zrevrange(grossKey, 0, min));
-                String status = "Top-" + String.valueOf(min);
-                RankingsList rankingsList = new RankingsList(status);
-                rankingsList.setImdbIDs(imdbIDs);
-                return rankingsList;
+                List<Tuple> entries = new ArrayList<>(jedis.zrevrangeWithScores(grossKey, 0, min-1));
+
+                for (Tuple t : entries) {
+                    rankings.add(new RankingEntry(t.getElement(), t.getScore()));
+                }
             }
         }
+        return rankings;
     }
 
-    public RankingsList handleViewerShipRequest(int k) {
+    public List<RankingEntry> handleViewerShipRequest(int k) {
         String viewsKey = "TOTAL_VIEWS";
 
-        try (Jedis jedis = pool.getResource()) {
-            if (!jedis.exists(viewsKey)) {
-                RankingsList emptyRankings = new RankingsList("N.A.");
-                return emptyRankings;
+        List<RankingEntry> rankings = new ArrayList<>();
 
-            } else {
+        try (Jedis jedis = pool.getResource()) { // try with resources block!
+            if (jedis.exists(viewsKey)) {
                 int min = (int) Math.min(k, jedis.zcard(viewsKey));
-                List<String> imdbIDs = new ArrayList<>(jedis.zrevrange(viewsKey, 0, min));
-                String status = "Top-" + String.valueOf(min);
-                RankingsList rankingsList = new RankingsList(status);
-                rankingsList.setImdbIDs(imdbIDs);
-                return rankingsList;
+                List<Tuple> entries = new ArrayList<>(jedis.zrevrangeWithScores(viewsKey, 0, min-1));
+
+                for (Tuple t : entries) {
+                    rankings.add(new RankingEntry(t.getElement(), t.getScore()));
+                }
             }
         }
+        return rankings;
     }
 }

@@ -35,10 +35,12 @@ public class EventAggregator implements ConsumerRebalanceListener, Runnable {
     private MongoDatabase database;
 
     private JedisPool pool;
+    private RedisDataInserter dataInserter;
     private final ObjectMapper m = new ObjectMapper();
 
-    public EventAggregator(JedisPool pool) {
+    public EventAggregator(JedisPool pool, RedisDataInserter inserter) {
         this.pool = pool;
+        dataInserter = inserter;
         String mongoHost = System.getProperty("mongodb.host", "0.0.0.0");
         String mongoDB = System.getProperty("mongodb.database", "ad");
         mongoAdapter.connect(mongoHost, mongoDB);
@@ -98,15 +100,14 @@ public class EventAggregator implements ConsumerRebalanceListener, Runnable {
                 for (ConsumerRecord<String, BMovieGenreEvent> record : records) {
                     System.out.println("Consumer with ClientId: " + clientId + " read message: " + record.value() + "  from partition: " + record.partition());
                     BMovieGenreEvent genreEvent = record.value();
-/*
+
                     // use this genre event to store all the right kind of data you need in redis
                     try (Jedis jedis = pool.getResource()) { // try with resources block!
                         storeAvgUserRatingOfBMovie(genreEvent, jedis);
-                        storeNetGrossOfBMovie(genreEvent, jedis);
-                        storeTotalViewsOfBMovie(genreEvent, jedis);
+                        dataInserter.storeNetGrossOfBMovie(genreEvent, jedis);
+                        dataInserter.storeTotalViewsOfBMovie(genreEvent, jedis);
                     }
 
- */
                     // 4. Commit (ack) -> increment the offset in Kafka
                     aggregator.commitAsync();
                 }
@@ -140,40 +141,6 @@ public class EventAggregator implements ConsumerRebalanceListener, Runnable {
             jedis.hset(genre, imdbID, str);
 
             jedis.zadd(genreKey, accumRating/numWatched, imdbID); // add avg user rating for a movie for a particular genre in sorted set
-        }
-    }
-
-    private void storeNetGrossOfBMovie(BMovieGenreEvent event, Jedis jedis) {
-        String imdbID = event.getImdbID();
-        String timeStamp = event.getbMovSeenDate();
-        String grossKey = imdbID + "MONEY";
-        String collectionEarningsKey = "TOTAL_COLLECTION_EARNINGS";
-
-        if (!jedis.exists(grossKey)) {
-            int ticketPrice = event.getTicketPrice();
-            jedis.hset(grossKey, timeStamp, String.valueOf(ticketPrice));
-            jedis.zadd(collectionEarningsKey, ticketPrice, imdbID);
-
-        } else if (jedis.exists(grossKey) && !jedis.hexists(grossKey, timeStamp)) {
-            int ticketPrice = event.getTicketPrice();
-            jedis.hset(grossKey, timeStamp, String.valueOf(ticketPrice));
-            jedis.zincrby(collectionEarningsKey, ticketPrice, imdbID);
-        }
-    }
-
-    private void storeTotalViewsOfBMovie(BMovieGenreEvent event, Jedis jedis) {
-        String imdbID = event.getImdbID();
-        String timeStamp = event.getbMovSeenDate();
-        String viewsKey = imdbID + "VIEWS";
-        String totalViewsKey = "TOTAL_VIEWS";
-
-        if (!jedis.exists(viewsKey)) {
-            jedis.hset(viewsKey, timeStamp, "WATCHED");
-            jedis.zadd(totalViewsKey, 1, imdbID);
-
-        } else if (jedis.exists(viewsKey) && !jedis.hexists(viewsKey, timeStamp)) {
-            jedis.hset(viewsKey, timeStamp, "WATCHED");
-            jedis.zincrby(totalViewsKey, 1, imdbID);
         }
     }
 

@@ -115,7 +115,7 @@ public class BMovieEventProcessor implements ConsumerRebalanceListener, Runnable
         int partition = -1;
 
         try {
-            partition = (Math.abs(event.getbMovGenre().hashCode())) % NUM_PARTITIONS;
+            partition = (Math.abs(event.getbMovGenre().hashCode())) % NUM_PARTITIONS; // re keying technique!!
             ProducerRecord<String, BMovieGenreEvent> record = new ProducerRecord<>(PUBLISH_TOPIC_NAME, partition, null, event);
             eventPublisher.send(record, callback);
         } catch (RuntimeException ex) {

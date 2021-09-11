@@ -16,10 +16,11 @@ public class EventAggregatorDriver {
     public static void startConsumerThreads() throws InterruptedException {
         ExecutorService executor = Executors.newCachedThreadPool();
         JedisPool jPool = new JedisPool(buildPoolConfig(), "0.0.0.0", 6379);
+        RedisDataInserter inserter = new RedisDataInserter();
 
         for (int i = 0; i < 3; i++) {
             // initialize our consumer thread
-            EventAggregator aggregator = new EventAggregator(jPool);
+            EventAggregator aggregator = new EventAggregator(jPool, inserter);
             aggregator.initializeAggregator();
             executor.submit(aggregator);
         }
