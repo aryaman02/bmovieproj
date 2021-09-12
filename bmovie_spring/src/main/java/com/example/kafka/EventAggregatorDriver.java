@@ -1,33 +1,45 @@
 package com.example.kafka;
 
-import redis.clients.jedis.Jedis;
+import com.example.utils.BMovieConfigProps;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class EventAggregatorDriver {
     public static void startConsumerThreads() throws InterruptedException {
         ExecutorService executor = Executors.newCachedThreadPool();
-        JedisPool jPool = new JedisPool(buildPoolConfig(), "0.0.0.0", 6379);
+        JedisPool jPool = new JedisPool(buildPoolConfig(), BMovieConfigProps.getRedisAddress(), 6379);
         RedisDataInserter inserter = new RedisDataInserter();
+
+        List<EventAggregator> processors = new ArrayList<>();
 
         for (int i = 0; i < 3; i++) {
             // initialize our consumer thread
             EventAggregator aggregator = new EventAggregator(jPool, inserter);
             aggregator.initializeAggregator();
+            processors.add(aggregator);
             executor.submit(aggregator);
         }
-        Thread.sleep(3600 * 10000L);
+        //Thread.sleep(3600 * 10000L);
 
-        executor.shutdown();
-        jPool.close();
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            System.out.println("shutting down");
+
+            processors.forEach(processor -> processor.stopConsumer());
+            executor.shutdown();
+            try {
+                executor.awaitTermination(5, TimeUnit.SECONDS);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            jPool.close();
+        }));
     }
 
     private static JedisPoolConfig buildPoolConfig() {

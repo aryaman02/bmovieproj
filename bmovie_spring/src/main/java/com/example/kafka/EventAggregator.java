@@ -2,6 +2,7 @@ package com.example.kafka;
 
 import com.example.controller.MongoConnectionAdapter;
 import com.example.generator.BMovieSeenEvent;
+import com.example.utils.BMovieConfigProps;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.BasicDBObject;
@@ -30,7 +31,7 @@ public class EventAggregator implements ConsumerRebalanceListener, Runnable {
     private String clientId;
 
     private static final String TOPIC_NAME = "bmovie_genre_events";
-    private static final String CONNECTION_STRING = "0.0.0.0:9092";
+    private static final String CONNECTION_STRING = "%s:9092";
     private final MongoConnectionAdapter mongoAdapter = new MongoConnectionAdapter();
     private MongoDatabase database;
 
@@ -41,7 +42,7 @@ public class EventAggregator implements ConsumerRebalanceListener, Runnable {
     public EventAggregator(JedisPool pool, RedisDataInserter inserter) {
         this.pool = pool;
         dataInserter = inserter;
-        String mongoHost = System.getProperty("mongodb.host", "0.0.0.0");
+        String mongoHost = BMovieConfigProps.getMongoDBAddress();
         String mongoDB = System.getProperty("mongodb.database", "ad");
         mongoAdapter.connect(mongoHost, mongoDB);
         database = mongoAdapter.getDatabase();
@@ -62,7 +63,9 @@ public class EventAggregator implements ConsumerRebalanceListener, Runnable {
     private Properties createPropsConsumer() {
         Properties props = new Properties();
 
-        props.put("bootstrap.servers", CONNECTION_STRING);
+        String connectionString = String.format(CONNECTION_STRING, BMovieConfigProps.getKafkaAddress());
+        System.out.println("Kafka address: " + connectionString);
+        props.put("bootstrap.servers", connectionString);
         props.put("key.deserializer", Serdes.String().deserializer().getClass().getName());
         props.put("value.deserializer", "com.example.kafka.GenreEventDeserializer");
 
@@ -159,6 +162,8 @@ public class EventAggregator implements ConsumerRebalanceListener, Runnable {
             if (tp.topic().equals(TOPIC_NAME)) {
                 long currOffset = aggregator.position(tp);
                 BasicDBObject newDocument = new BasicDBObject();
+
+                System.out.println("for partition " + tp.partition() + "  storing offset: " + currOffset);
                 newDocument.append("$set", new BasicDBObject().append("offset", currOffset));
 
                 BasicDBObject searchQuery = new BasicDBObject().append("partitionID", tp.partition());
@@ -196,6 +201,7 @@ public class EventAggregator implements ConsumerRebalanceListener, Runnable {
                 } else {
                     Document doc = queryDocs.get(0);
                     long startingOffset = doc.getLong("offset");
+                    System.out.println("for partition " + tp.partition() + "  seeking to offset: " + startingOffset);
                     aggregator.seek(tp, startingOffset);
                 }
             }
