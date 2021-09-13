@@ -10,6 +10,7 @@ target/
 *.iws
 *.iml
 *.ipr
+**/*.jar
 
 **/*mvn*
 
