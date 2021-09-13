@@ -74,7 +74,7 @@ public class BMovieEventGenerator {
         }
     }
 
-    public void generateBMovieSeenFiniteEvents() throws InterruptedException {
+    /*public void generateBMovieSeenFiniteEvents() throws InterruptedException {
         int badEventCandidate = (int) (Math.random() * 10);
 
         for (int i = 0; i < 10; i++) {
@@ -89,7 +89,7 @@ public class BMovieEventGenerator {
             }
             //Thread.sleep((long) (Math.random() * 4970 + 30));// sleep after generating bmovieseen event
         }
-    }
+    }*/
 
     private BMovieSeenEvent generateGoodEvent() {
         String randIMDBid = bMovieIMDBids.get((int) (Math.random() * bMovieIMDBids.size()));
@@ -118,9 +118,6 @@ public class BMovieEventGenerator {
 
     private BMovieSeenEvent generateBadEvent() {
         List<String> powerSet = Arrays.asList("001", "010", "011", "100", "101", "110", "111");
-        double rating = -1;
-        String location = "";
-        int ticketPrice = -1;
 
         int randIndex = (int) (Math.random() * powerSet.size());
         BMovieSeenEvent event = generateGoodEvent();

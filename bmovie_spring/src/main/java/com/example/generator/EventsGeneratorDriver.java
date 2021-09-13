@@ -4,7 +4,7 @@ public class EventsGeneratorDriver {
     public static void generateEvents() throws InterruptedException {
         BMovieEventGenerator generator = new BMovieEventGenerator();
         generator.startWorkerThread();
-        generator.generateBMovieSeenFiniteEvents();
+        generator.generateBMovieSeenEvents();
         generator.terminateMongoConnection();
     }
 }
