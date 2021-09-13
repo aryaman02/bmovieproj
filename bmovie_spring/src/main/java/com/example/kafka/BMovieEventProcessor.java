@@ -6,6 +6,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.example.controller.MongoConnectionAdapter;
 import com.example.generator.BMovieSeenEvent;
+import com.example.utils.BMovieConfigProps;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.BasicDBObject;
@@ -39,7 +40,7 @@ public class BMovieEventProcessor implements ConsumerRebalanceListener, Runnable
     private String clientId;
 
     private static final String CONSUME_TOPIC_NAME = "bmovie_seen_events";
-    private static final String CONNECTION_STRING = "0.0.0.0:9092";
+    private static final String CONNECTION_STRING = "%s:9092";
     private Set<String> indianStates;
     private final MongoConnectionAdapter mongoAdapter = new MongoConnectionAdapter();
     private MongoDatabase database;
@@ -53,7 +54,7 @@ public class BMovieEventProcessor implements ConsumerRebalanceListener, Runnable
 
     public BMovieEventProcessor(Set<String> uniqueStrs) {
         indianStates = uniqueStrs;
-        String mongoHost = System.getProperty("mongodb.host", "0.0.0.0");
+        String mongoHost = BMovieConfigProps.getMongoDBAddress();
         String mongoDB = System.getProperty("mongodb.database", "ad");
         mongoAdapter.connect(mongoHost, mongoDB);
         database = mongoAdapter.getDatabase();
@@ -79,7 +80,7 @@ public class BMovieEventProcessor implements ConsumerRebalanceListener, Runnable
     private Properties createPropsConsumer() {
         Properties props = new Properties();
 
-        props.put("bootstrap.servers", CONNECTION_STRING);
+        props.put("bootstrap.servers", String.format(CONNECTION_STRING, BMovieConfigProps.getKafkaAddress()));
         props.put("key.deserializer", Serdes.String().deserializer().getClass().getName());
         props.put("value.deserializer", "com.example.kafka.SeenEventDeserializer");
 
@@ -102,7 +103,7 @@ public class BMovieEventProcessor implements ConsumerRebalanceListener, Runnable
     private Properties createPropsProducer() {
         Properties props = new Properties();
 
-        props.put("bootstrap.servers", CONNECTION_STRING);
+        props.put("bootstrap.servers", String.format(CONNECTION_STRING, BMovieConfigProps.getKafkaAddress()));
         props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         props.put("value.serializer", "com.example.kafka.KafkaJsonSerializer");
         props.put("acks", "1");

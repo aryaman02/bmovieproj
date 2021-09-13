@@ -3,6 +3,7 @@ package com.example.controller;
 import com.example.demo.remote.*;
 import com.example.queryservice.BMovieQueryServiceDriver;
 import com.example.queryservice.GrpcChannelManager;
+import com.example.utils.BMovieConfigProps;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.grpc.ManagedChannel;
 import org.apache.commons.lang3.mutable.MutableBoolean;
@@ -12,7 +13,7 @@ import java.util.Map;
 
 public class BMovieQueryClient {
     private final ObjectMapper m = new ObjectMapper();
-    private static final String GRPC_HOST = "0.0.0.0";
+    private static final String GRPC_HOST = BMovieConfigProps.getGRPCAddress();
 
     public BMovie findBMovieDetails(String imdbID) {
         ManagedChannel channel = GrpcChannelManager.getInstance().getChannel(GRPC_HOST,
@@ -52,7 +53,7 @@ public class BMovieQueryClient {
     }
 
     public BMovieQueriedInfo getStatusOfBMovieImg(String imdbID) {
-        ManagedChannel channel = GrpcChannelManager.getInstance().getChannel("0.0.0.0",
+        ManagedChannel channel = GrpcChannelManager.getInstance().getChannel(GRPC_HOST,
             BMovieQueryServiceDriver.GRPC_PORT);
 
         if (channel != null) {
@@ -99,7 +100,7 @@ public class BMovieQueryClient {
     }
 
     public BMovieQueriedInfo retrieveGeneralQueriedResults(String genres, String actors) {
-        ManagedChannel channel = GrpcChannelManager.getInstance().getChannel("0.0.0.0",
+        ManagedChannel channel = GrpcChannelManager.getInstance().getChannel(GRPC_HOST,
             BMovieQueryServiceDriver.GRPC_PORT);
 
         if (channel != null) {
@@ -135,7 +136,7 @@ public class BMovieQueryClient {
     }
 
     public BMovieQueriedInfo retrieveSingleQueriedResults(String singleCriteriaType, double min, double max, String genres, String actors) {
-        ManagedChannel channel = GrpcChannelManager.getInstance().getChannel("0.0.0.0",
+        ManagedChannel channel = GrpcChannelManager.getInstance().getChannel(GRPC_HOST,
             BMovieQueryServiceDriver.GRPC_PORT);
 
         if (channel != null) {
@@ -176,7 +177,7 @@ public class BMovieQueryClient {
     public BMovieQueriedInfo retrieveDoubleQueriedResults(String criteria1, String criteria2, double min1, double max1, double min2,
         double max2, String genres, String actors) {
 
-        ManagedChannel channel = GrpcChannelManager.getInstance().getChannel("0.0.0.0",
+        ManagedChannel channel = GrpcChannelManager.getInstance().getChannel(GRPC_HOST,
             BMovieQueryServiceDriver.GRPC_PORT);
 
         if (channel != null) {
@@ -217,7 +218,7 @@ public class BMovieQueryClient {
     }
 
     public BMovieQueriedInfo retrieveTripleQueriedResults(double min1, double max1, double min2, double max2, double min3, double max3, String genres, String actors) {
-        ManagedChannel channel = GrpcChannelManager.getInstance().getChannel("0.0.0.0",
+        ManagedChannel channel = GrpcChannelManager.getInstance().getChannel(GRPC_HOST,
             BMovieQueryServiceDriver.GRPC_PORT);
 
         if (channel != null) {
@@ -260,7 +261,7 @@ public class BMovieQueryClient {
     }
 
     public BMovieGenres retrieveAllBMovieGenres() {
-        ManagedChannel channel = GrpcChannelManager.getInstance().getChannel("0.0.0.0",
+        ManagedChannel channel = GrpcChannelManager.getInstance().getChannel(GRPC_HOST,
             BMovieQueryServiceDriver.GRPC_PORT);
 
         if (channel != null) {

@@ -1,6 +1,7 @@
 package com.example.queryservice;
 
 import com.example.controller.MongoConnectionAdapter;
+import com.example.utils.BMovieConfigProps;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.client.MongoDatabase;
 import io.grpc.Server;
@@ -29,7 +30,7 @@ public class BMovieQueryServiceDriver {
     private Set<String> bMovieGenres = new HashSet<>();
 
     public void start() {
-        String mongoHost = System.getProperty("mongodb.host", "0.0.0.0");
+        String mongoHost = BMovieConfigProps.getMongoDBAddress();
         String mongoDB = System.getProperty("mongodb.database", "ad");
         mongoConnectionAdapter.connect(mongoHost, mongoDB);
         database = mongoConnectionAdapter.getDatabase();

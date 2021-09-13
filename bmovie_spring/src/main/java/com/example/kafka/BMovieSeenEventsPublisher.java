@@ -1,6 +1,7 @@
 package com.example.kafka;
 
 import com.example.generator.BMovieSeenEvent;
+import com.example.utils.BMovieConfigProps;
 import org.apache.kafka.clients.producer.Callback;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -21,7 +22,7 @@ public class BMovieSeenEventsPublisher {
 
     private KafkaProducer<String, BMovieSeenEvent> producer;
     private final EventPublished callback = new EventPublished();
-    private static final String CONNECTION_STRING = "0.0.0.0:9092";
+    private static final String CONNECTION_STRING = "%s:9092";
     private static final String TOPIC_NAME = "bmovie_seen_events";
     private static final int NUM_PARTITIONS = 12;
 
@@ -51,7 +52,7 @@ public class BMovieSeenEventsPublisher {
     private Properties createProps() {
         Properties props = new Properties();
 
-        props.put("bootstrap.servers", CONNECTION_STRING);
+        props.put("bootstrap.servers", String.format(CONNECTION_STRING, BMovieConfigProps.getKafkaAddress()));
         props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         props.put("value.serializer", "com.example.kafka.KafkaJsonSerializer");
         props.put("acks", "1");

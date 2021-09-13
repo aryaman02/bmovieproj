@@ -1,5 +1,6 @@
 package com.example.controller;
 
+import com.example.utils.BMovieConfigProps;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +16,7 @@ import java.util.List;
 public class BMovEventInfoController {
     @Autowired
     private final BMovEventInfoService service = new BMovEventInfoService();
-    private static final String REDIS_HOST = "0.0.0.0";
+    private static final String REDIS_HOST = BMovieConfigProps.getRedisAddress();
     private static final int REDIS_PORT = 6379;
     private final ObjectMapper m = new ObjectMapper();
 

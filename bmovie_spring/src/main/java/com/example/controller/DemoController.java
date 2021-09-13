@@ -1,5 +1,6 @@
 package com.example.controller;
 
+import com.example.utils.BMovieConfigProps;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.minio.*;
@@ -26,10 +27,10 @@ public class DemoController {
     private final BMovieQueryClient bMovieQueryClient = new BMovieQueryClient();
     private final OkHttpClient client = new OkHttpClient();
 
-    private static final String MINIO_CONNECTIONINFO = "http://0.0.0.0:9000";
+    private static final String MINIO_CONNECTIONINFO = "http://%s:9000";
     private MinioClient minioClient =
         MinioClient.builder()
-            .endpoint(MINIO_CONNECTIONINFO)
+            .endpoint(String.format(MINIO_CONNECTIONINFO, BMovieConfigProps.getMinIOAddress()))
             .credentials("key", "aryaman02")
             .build();
     private static final String BUCKET_NAME = "bmovieimgs";

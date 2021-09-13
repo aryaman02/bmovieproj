@@ -1,0 +1,10 @@
+FROM openjdk:11
+
+RUN apt-get update && apt-get install net-tools
+
+ADD BMovieProj-0.0.1-SNAPSHOT.jar /tmp
+
+ENV MONGO_HOST 0.0.0.0
+
+WORKDIR /tmp
+ENTRYPOINT java -Dmode=grpcservice -jar BMovieProj-0.0.1-SNAPSHOT.jar com.example.demo.DemoApplication
