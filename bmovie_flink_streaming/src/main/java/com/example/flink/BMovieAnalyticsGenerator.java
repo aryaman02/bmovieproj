@@ -34,7 +34,6 @@ public class BMovieAnalyticsGenerator {
         .asList("AN", "AP", "AR", "AS", "BR", "CH", "CT", "DN", "DD", "DL", "GA", "GJ", "HR", "HP", "JK", "JH", "KA",
             "KL", "LD", "MP", "MH", "MN", "ML", "MZ", "NL", "OR", "PY", "PB", "RJ", "SK", "TN", "TG", "TR", "UP", "UT",
             "WB"));
-    private static Object ParameterTool;
 
     public static void main(String[] args) throws Exception {
 
@@ -88,11 +87,11 @@ public class BMovieAnalyticsGenerator {
                 return filterCondition;
             }).uid("filter-id"); // only retain good bMovSeenEvents from original datastream
 
-        DataStream<BMovieGenreEvent> bMovGenreEvents = goodBMovieSeenEvents.flatMap(new BMovieSeenEventEnricher()).uid("enricher-id");
+        DataStream<BMovieGenreEvent> bMovGenreEvents = goodBMovieSeenEvents.flatMap(new BMovieSeenEventEnricher(appConfig)).uid("enricher-id");
 
         DataStream<Long> aggregatedAvgRatingStats = bMovGenreEvents
             .windowAll(TumblingProcessingTimeWindows.of(Time.seconds(30L)))
-            .process(new AggregatorFunctionGenre()).uid("avg_rating_window-id"); // NOT writing to cassandra sink here!
+            .process(new AggregatorFunctionGenre(appConfig)).uid("avg_rating_window-id"); // NOT writing to cassandra sink here!
 
         DataStream<Tuple3<Long, Long, String>> aggregatedMovieStats = goodBMovieSeenEvents.keyBy(event -> event.getImdbID())
             .process(new AggregatorFunctionId()).uid("key_imdb-id"); // viewcount and collection earnings aggregator with key imdbid
