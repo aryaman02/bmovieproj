@@ -42,6 +42,7 @@ public class BMovieSeenEventsPublisher {
             partition = (Math.abs(event.getImdbID().hashCode())) % NUM_PARTITIONS;
             ProducerRecord<String, BMovieSeenEvent> record = new ProducerRecord<>(TOPIC_NAME, partition, null, event);
             producer.send(record, callback);
+            System.out.println("Message: " + record.value() +  " published from partition: " + record.partition());
         } catch (RuntimeException ex) {
             String errMessage = String.format("Exception while publishing message %s on partition %d", event, partition);
             throw new RuntimeException(errMessage, ex);
@@ -52,7 +53,8 @@ public class BMovieSeenEventsPublisher {
     private Properties createProps() {
         Properties props = new Properties();
 
-        props.put("bootstrap.servers", String.format(CONNECTION_STRING, BMovieConfigProps.getKafkaAddress()));
+        props.put("bootstrap.servers", "10.180.57.136:9093");
+        //String.format(CONNECTION_STRING, BMovieConfigProps.getKafkaAddress())
         props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         props.put("value.serializer", "com.example.kafka.KafkaJsonSerializer");
         props.put("acks", "1");

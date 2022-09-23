@@ -62,11 +62,11 @@ public class BMovieEventGenerator {
             for (int i = 0; i < 10; i++) {
                 if (i == badEventCandidate) {
                     BMovieSeenEvent bMovieBadEvent = generateBadEvent();
-                    //System.out.println(bMovieBadEvent); // for testing purposes
+                    System.out.println(bMovieBadEvent); // for testing purposes
                     lbq.add(bMovieBadEvent);
                 } else {
                     BMovieSeenEvent bMovieGoodEvent = generateGoodEvent();
-                    //System.out.println(bMovieGoodEvent); // for testing purposes
+                    System.out.println(bMovieGoodEvent); // for testing purposes
                     lbq.add(bMovieGoodEvent);
                 }
                 Thread.sleep((long) (Math.random() * 4970 + 30));// sleep after generating bmovieseen event

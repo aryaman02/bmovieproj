@@ -74,31 +74,31 @@ services:
     depends_on:
       - zookeeper
 
-  aggregator-svc:
-    image: 'aggregator-svc:latest'
-    scale: 1
-    networks:
-      - app-tier
-    environment:
-      - KAFKA_HOST=kafka
-      - REDIS_HOST=redis
-      - MONGO_HOST=mongo
-    depends_on:
-      - kafka
-      - redis
-      - mongo
+#  aggregator-svc:
+#    image: 'aggregator-svc:latest'
+#    scale: 1
+#    networks:
+#      - app-tier
+#    environment:
+#      - KAFKA_HOST=kafka
+#      - REDIS_HOST=redis
+#      - MONGO_HOST=mongo
+#    depends_on:
+#      - kafka
+#      - redis
+#      - mongo
 
-  processor-svc:
-    image: 'processor-svc:latest'
-    scale: 1
-    networks:
-      - app-tier
-    environment:
-      - KAFKA_HOST=kafka
-      - MONGO_HOST=mongo
-    depends_on:
-      - kafka
-      - mongo
+#  processor-svc:
+#    image: 'processor-svc:latest'
+#    scale: 1
+#    networks:
+#      - app-tier
+#    environment:
+#      - KAFKA_HOST=kafka
+#      - MONGO_HOST=mongo
+#    depends_on:
+#      - kafka
+#      - mongo
 
   grpc-svc:
     image: 'grpc-svc:latest'

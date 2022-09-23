@@ -1,0 +1,22 @@
+version: "3"
+
+networks:
+  app-tier:
+    driver: bridge
+
+volumes:
+  vol1:
+  vol2:
+  zk_data:
+  kafka_data:
+
+services:
+  mongo:
+    image: 'mongo:latest'
+    ports:
+      - '27017:27017'
+    networks:
+      - app-tier
+    volumes:
+      - vol2:/data/db
+

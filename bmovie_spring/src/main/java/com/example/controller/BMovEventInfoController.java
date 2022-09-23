@@ -30,7 +30,7 @@ public class BMovEventInfoController {
         service.closePool();
     }
 
-    @RequestMapping(value="/api/v1/bmovie/rank_byrating", method = RequestMethod.GET, produces = "application/json")
+    /*@RequestMapping(value="/api/v1/bmovie/rank_byrating", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<String> getTopKMoviesByUserRating(@RequestParam(name="g") String genre, @RequestParam(name="k") String num)
@@ -122,5 +122,5 @@ public class BMovEventInfoController {
 
         String response = m.writeValueAsString(listOfRankings);
         return new ResponseEntity<>(response, HttpStatus.OK);
-    }
+    }*/
 }

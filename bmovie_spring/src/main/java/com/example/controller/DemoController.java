@@ -5,15 +5,19 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.minio.*;
 import io.minio.errors.*;
-import okhttp3.*;
+import okhttp3.HttpUrl;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 import org.apache.commons.io.IOUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,15 +39,24 @@ public class DemoController {
             .build();
     private static final String BUCKET_NAME = "bmovieimgs";
 
-    /*@PostConstruct
-    public void initialize() {
-
+    @PostConstruct
+    public void initialize() throws ServerException, InsufficientDataException, ErrorResponseException, IOException,
+        NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
+        // Make 'asiatrip' bucket if not exist.
+        boolean found =
+            minioClient.bucketExists(BucketExistsArgs.builder().bucket(BUCKET_NAME).build());
+        if (!found) {
+            // Make a new bucket called 'bmovieimgs'.
+            minioClient.makeBucket(MakeBucketArgs.builder().bucket(BUCKET_NAME).build());
+        } else {
+            System.out.println("Bucket 'bmovieimgs' already exists.");
+        }
     }
 
     @PreDestroy
     public void cleanup() {
 
-    }*/
+    }
 
     @RequestMapping(value="/api/v1/bmovie/description", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody

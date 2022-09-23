@@ -1,0 +1,48 @@
+apiVersion: flink.apache.org/v1beta1
+kind: FlinkDeployment
+metadata:
+  name: bmovie
+spec:
+  restartNonce: 295
+  image: bmovie-flink-streaming:latest
+  imagePullPolicy: Never
+  flinkVersion: v1_15
+  flinkConfiguration:
+    taskmanager.numberOfTaskSlots: "2"
+    execution.checkpointing.interval: 60s
+    execution.checkpointing.timeout: 600s
+    high-availability: org.apache.flink.kubernetes.highavailability.KubernetesHaServicesFactory
+    high-availability.storageDir: file:///flink-data/bmovie/ha
+    rest.flamegraph.enabled: "true"
+    state.savepoints.dir: file:///flink-data/bmovie/savepoints
+    state.checkpoints.dir: file:///flink-data/bmovie/checkpoints
+  serviceAccount: flink
+  jobManager:
+    resource:
+      memory: "892m"
+      cpu: 0.5
+  taskManager:
+    resource:
+      memory: "2048m"
+      cpu: 0.5
+  job:
+    jarURI: local:///usr/local/bmovie-streaming/lib/bmovie-streaming.jar
+    entryClass: com.example.flink.BMovieAnalyticsGenerator
+    parallelism: 2
+    state: running
+    upgradeMode: last-state
+    args: ["--kafka-brokers", "10.180.57.136:9093", "--mongo-address", "10.180.57.136"]
+  podTemplate:
+    spec:
+      containers:
+        - name: flink-main-container
+          volumeMounts:
+            - mountPath: /flink-data
+              name: flink-volume
+      volumes:
+        - name: flink-volume
+          hostPath:
+            # directory location on host
+            path: /tmp/flink
+            # this field is optional
+            type: Directory

@@ -63,9 +63,9 @@ public class EventAggregator implements ConsumerRebalanceListener, Runnable {
     private Properties createPropsConsumer() {
         Properties props = new Properties();
 
-        String connectionString = String.format(CONNECTION_STRING, BMovieConfigProps.getKafkaAddress());
-        System.out.println("Kafka address: " + connectionString);
-        props.put("bootstrap.servers", connectionString);
+        //String connectionString = String.format(CONNECTION_STRING, BMovieConfigProps.getKafkaAddress());
+        //System.out.println("Kafka address: " + connectionString);
+        props.put("bootstrap.servers", "0.0.0.0:9093");
         props.put("key.deserializer", Serdes.String().deserializer().getClass().getName());
         props.put("value.deserializer", "com.example.kafka.GenreEventDeserializer");
 

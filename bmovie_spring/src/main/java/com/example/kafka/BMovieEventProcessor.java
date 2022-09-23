@@ -80,7 +80,8 @@ public class BMovieEventProcessor implements ConsumerRebalanceListener, Runnable
     private Properties createPropsConsumer() {
         Properties props = new Properties();
 
-        props.put("bootstrap.servers", String.format(CONNECTION_STRING, BMovieConfigProps.getKafkaAddress()));
+        props.put("bootstrap.servers", "0.0.0.0:9093");
+        //String.format(CONNECTION_STRING, BMovieConfigProps.getKafkaAddress())
         props.put("key.deserializer", Serdes.String().deserializer().getClass().getName());
         props.put("value.deserializer", "com.example.kafka.SeenEventDeserializer");
 
@@ -103,7 +104,8 @@ public class BMovieEventProcessor implements ConsumerRebalanceListener, Runnable
     private Properties createPropsProducer() {
         Properties props = new Properties();
 
-        props.put("bootstrap.servers", String.format(CONNECTION_STRING, BMovieConfigProps.getKafkaAddress()));
+        props.put("bootstrap.servers", "0.0.0.0:9093");
+        // String.format(CONNECTION_STRING, BMovieConfigProps.getKafkaAddress())
         props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         props.put("value.serializer", "com.example.kafka.KafkaJsonSerializer");
         props.put("acks", "1");
