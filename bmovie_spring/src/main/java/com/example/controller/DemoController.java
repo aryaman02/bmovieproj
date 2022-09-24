@@ -42,7 +42,7 @@ public class DemoController {
     @PostConstruct
     public void initialize() throws ServerException, InsufficientDataException, ErrorResponseException, IOException,
         NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
-        // Make 'asiatrip' bucket if not exist.
+        // Make 'bmovieimgs' bucket if not exist.
         boolean found =
             minioClient.bucketExists(BucketExistsArgs.builder().bucket(BUCKET_NAME).build());
         if (!found) {
